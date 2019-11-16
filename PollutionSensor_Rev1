@@ -1,1 +1,109 @@
 
+
+const int AOUTpin=0;  //the AOUT pin of the CO sensor goes into analog pin A0 of the arduino
+const int DOUTpin=8;  //the DOUT pin of the CO sensor goes into digital pin D8 of the arduino
+const int beepPin=13;  //the anode of the LED connects to digital pin D13 of the arduino
+
+float limit;
+float value;
+float ppm1;
+
+int sensorD = 7;
+int gas_valueD;
+float sensor = A1;
+float gas_value;
+
+int smoke_Value = 1;
+
+
+int timecntr = 0;
+int DvalsArr[10];
+int rate1;
+int alarmrate = 6;
+
+
+
+void setup(){
+  Serial.begin(9600);  //sets the baud rate
+  pinMode(beepPin, OUTPUT);  //sets the pin as an output of the arduino
+  
+  pinMode(DOUTpin, INPUT);  //sets the pin as an input to the arduino: CO
+  
+  pinMode(sensorD ,INPUT);  //digital values: SMOKE
+  pinMode(sensor,INPUT);    //analog values: SMOKE
+}
+
+void loop(){
+  //******************************  CO SENSOR  *********************************//
+  value = analogRead(AOUTpin);  //reads the analaog value from the CO sensor’s AOUT pin
+  limit = digitalRead(DOUTpin);  //reads the digital value from the CO sensor’s DOUT pin
+  
+  ppm1 = 100*pow((log(40)/log(0.09)), 130/value);
+  
+  Serial.print("CO value: ");
+  Serial.println(value);  //prints the CO value
+  //Serial.print("Limit: ");
+  //Serial.println(limit);  //prints the limit reached as either LOW or HIGH (above or underneath)
+  //Serial.print(ppm);
+  //delay(1000); //rate of printing out
+  //if (limit == HIGH){
+  //digitalWrite(ledPin, HIGH);  //if limit has been reached, LED turns on as status indicator
+  //}
+  //else{
+  //digitalWrite(ledPin, LOW);  //if threshold not reached, LED remains off
+  
+  
+  
+  //***********************  GAS SENSOR  ***************************//
+   gas_valueD = digitalRead(sensorD);
+  //Serial.println(gas_valueD);
+  //delay(1000);
+
+//  DvalsArr[timecntr] = sensor;
+//  if (DvalsArr[9] > 0){
+//  rate1 = DvalsArr[9] - DvalsArr[0];
+//  }
+//  if (rate1 > alarmrate){
+//  digitalWrite(beepPin, LOW);
+//  }
+  
+  gas_value = analogRead(sensor);
+  Serial.print("Gas value: ");
+  Serial.println(gas_value);
+
+//  Serial.print("ppm change: ");
+//  Serial.println(rate1);
+  //delay(1000);
+
+//  timecntr = timecntr ++;
+//  if (timecntr == 10){
+//    timecntr = 0;
+//  }
+  
+  
+  //**************************  SMOKE DETECTOR  ***************************//
+  float sensor_volt;
+  float sensorValue;
+  int smoke_value;
+  int smokeSensor;
+
+  smoke_value=digitalRead(smokeSensor);
+  sensorValue = analogRead(A2);
+  sensor_volt = sensorValue/1024*5.0;
+  
+  Serial.print("Smoke sensor value: ");
+  Serial.print(sensorValue);
+  //Serial.println("V");
+
+  delay(1000);
+
+  if (limit == HIGH || gas_valueD == HIGH || smoke_value == HIGH){
+    digitalWrite(beepPin, HIGH);  //if limit has been reached, beep turns on as status indicator
+  }
+  else{
+    digitalWrite(beepPin, LOW);  //if threshold not reached, beep remains off
+  }
+
+  Serial.print('\n');
+  Serial.print('\n');
+}
